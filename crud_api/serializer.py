@@ -2,8 +2,17 @@
 from rest_framework import serializers
 from .models import Student
 
+
+#Validators
+def starts_with_r(value):
+    if value[0].lower() != 'r':
+        raise serializers.ValidationError('Name should be start with r')
+
+
+
+
 class StudentSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=100)
+    name = serializers.CharField(max_length=100, validators=[starts_with_r])
     roll = serializers.IntegerField()
     city = serializers.CharField(max_length=100)
 
@@ -19,3 +28,18 @@ class StudentSerializer(serializers.Serializer):
         instance.city = validated_data.get('city',instance.city)
         instance.save()
         return instance
+
+    #field_level validation
+    def validate_roll(self, value):
+        if value >= 200:
+            raise serializers.ValidationError('Seat full')
+        return value
+
+
+    #object_level validation
+    def validate(self, data):
+        nm = data.get('name')
+        ct = data.get('city')
+        if nm.lower() == 'rahul' and ct.lower() != 'ranchi':
+            raise serializers.ValidationError('city must be ranchi')
+        return data
