@@ -2,32 +2,57 @@
 from rest_framework import serializers
 from .models import Student
 
-
-#Validators
-def starts_with_r(value):
-    if value[0].lower() != 'r':
-        raise serializers.ValidationError('Name should be start with r')
-
-
-
-
-class StudentSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=100, validators=[starts_with_r])
-    roll = serializers.IntegerField()
-    city = serializers.CharField(max_length=100)
-
-    #Post method
-    def create(self,validated_data):
-        return Student.objects.create(**validated_data)
+#Model Serializer class:
+class StudentSerializer(serializers.ModelSerializer):
+    # name = serializers.CharField(read_only=True)
+    class Meta:
+        model = Student
+        fields = ['id','name','roll','city']
+        # read_only_fields = ['name','roll']
+        extra_kwargs = {'name':{'read_only':True}}
 
 
-    #update method:
-    def update(self,instance,validated_data):
-        instance.name = validated_data.get('name',instance.name)
-        instance.roll = validated_data.get('roll',instance.roll)
-        instance.city = validated_data.get('city',instance.city)
-        instance.save()
-        return instance
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# #Validators
+# def starts_with_r(value):
+#     if value[0].lower() != 'r':
+#         raise serializers.ValidationError('Name should be start with r')
+
+
+
+
+# class StudentSerializer(serializers.Serializer):
+#     name = serializers.CharField(max_length=100, validators=[starts_with_r])
+#     roll = serializers.IntegerField()
+#     city = serializers.CharField(max_length=100)
+#
+#     #Post method
+#     def create(self,validated_data):
+#         return Student.objects.create(**validated_data)
+#
+#
+#     #update method:
+#     def update(self,instance,validated_data):
+#         instance.name = validated_data.get('name',instance.name)
+#         instance.roll = validated_data.get('roll',instance.roll)
+#         instance.city = validated_data.get('city',instance.city)
+#         instance.save()
+#         return instance
 
     #field_level validation
     def validate_roll(self, value):
